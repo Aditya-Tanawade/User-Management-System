@@ -1,22 +1,29 @@
 package com.example.User.Management.System.services;
 
+import com.example.User.Management.System.dtos.TaskDTO;
 import com.example.User.Management.System.entities.Task;
 import com.example.User.Management.System.entities.User;
 import com.example.User.Management.System.exceptions.ResourceNotFoundException;
+
 import com.example.User.Management.System.repositories.TaskRepository;
 import com.example.User.Management.System.repositories.UserRepository;
-import lombok.RequiredArgsConstructor;
-
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class TaskService {
 
-    private final TaskRepository taskRepository;
-    private final UserRepository userRepository;
+    @Autowired
+    private TaskRepository taskRepository;
 
-    public Task assignTaskToUser(Long userId, String taskName) {
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ModelMapper mapper; // For DTO conversion
+
+    public TaskDTO assignTaskToUser(Long userId, String taskName) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
 
@@ -24,8 +31,7 @@ public class TaskService {
         task.setTaskName(taskName);
         task.setUser(user);
 
-        return taskRepository.save(task);
+        Task savedTask = taskRepository.save(task);
+        return mapper.map(savedTask, TaskDTO.class); // Convert to DTO before returning
     }
-
-
 }

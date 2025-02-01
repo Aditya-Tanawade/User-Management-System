@@ -17,12 +17,12 @@ public class AdminController {
 
 
     @GetMapping("/users")
-    public List<User> getAllUsers() {
+    public List<UserDTO> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/users/{id}")
-    public User findUser(@PathVariable Long id) {
+    public UserDTO findUser(@PathVariable Long id) {
         return userService.findUser(id);
     }
 
@@ -32,7 +32,7 @@ public class AdminController {
     }
 
     @PutMapping("/users/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User user) {
+    public UserDTO updateUser(@PathVariable Long id, @RequestBody User user) {
         return userService.updateUser(id, user);
     }
 

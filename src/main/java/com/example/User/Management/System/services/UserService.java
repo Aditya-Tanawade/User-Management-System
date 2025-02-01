@@ -1,5 +1,6 @@
 package com.example.User.Management.System.services;
 
+import com.example.User.Management.System.dtos.TaskDTO;
 import com.example.User.Management.System.dtos.UserDTO;
 import com.example.User.Management.System.entities.Role;
 import com.example.User.Management.System.entities.User;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -31,8 +33,11 @@ public class UserService  {
 
 
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDTO> getAllUsers() {
+        List<User>allUsers=userRepository.findAll();
+        return allUsers.stream()
+                .map(user -> mapper.map(user, UserDTO.class))
+                .toList();
     }
 
     public UserDTO createUser(UserDTO userDTO) {
@@ -43,13 +48,13 @@ public class UserService  {
     }
 
 
-    public User updateUser(Long id, User user) {
+    public UserDTO updateUser(Long id, User user) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         existingUser.setName(user.getName());
         existingUser.setEmail(user.getEmail());
         existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(existingUser);
+        return mapper.map(userRepository.save(existingUser),UserDTO.class);
     }
 
     public void deleteUser(Long id) {
@@ -61,6 +66,16 @@ public class UserService  {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
+
+    public List<TaskDTO> getUserTasks(String email) {
+        User user = getUserByEmail(email);
+
+        return user.getTasks().stream()
+                .map(task -> mapper.map(task, TaskDTO.class))
+                .collect(Collectors.toList());
+    }
+
+
     public String loadAdmins() {
         User user1= new User(1L,"ADMIN","admin@gmail.com",passwordEncoder.encode("123456"),Role.ADMIN);
 
@@ -70,8 +85,11 @@ public class UserService  {
 
 
 
-    public User findUser(Long id) {
-        return userRepository.findById(id)
+    public UserDTO findUser(Long id) {
+
+        User user= userRepository.findById(id)
                 .orElseThrow(()->new ResourceNotFoundException("User NOt FOund With This Id :- " + id));
+
+        return mapper.map(user,UserDTO.class);
     }
 }

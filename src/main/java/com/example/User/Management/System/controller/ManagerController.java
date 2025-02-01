@@ -1,6 +1,8 @@
 package com.example.User.Management.System.controller;
 
 
+import com.example.User.Management.System.dtos.TaskDTO;
+import com.example.User.Management.System.dtos.UserDTO;
 import com.example.User.Management.System.entities.Task;
 import com.example.User.Management.System.entities.User;
 import com.example.User.Management.System.services.TaskService;
@@ -20,17 +22,17 @@ public class ManagerController {
     private TaskService taskService;
 
     @GetMapping("/users")
-    public List<User> getAllUsers() {
+    public List<UserDTO> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/users/{id}")
-    public User getUserById(@PathVariable Long id){
+    public UserDTO getUserById(@PathVariable Long id){
         return userService.findUser(id);
     }
 
     @PostMapping("/users/{userId}/assign-task")
-    public Task assignTaskToUser(@PathVariable Long userId, @RequestBody String taskName) {
+    public TaskDTO assignTaskToUser(@PathVariable Long userId, @RequestBody String taskName) {
         return taskService.assignTaskToUser(userId, taskName);
     }
 }
