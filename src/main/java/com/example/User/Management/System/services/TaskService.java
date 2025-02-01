@@ -31,4 +31,22 @@ public class TaskService {
 
         return mapper.map(taskRepository.save(task),TaskDTO.class);
     }
+
+
+
+    public Task updateTask(Long taskId, TaskDTO taskDTO) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        task.setTaskName(taskDTO.getTaskName());
+
+        if (taskDTO.getUserId() != null) {
+            User user = userRepository.findById(taskDTO.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            task.setUser(user);
+        }
+
+        return taskRepository.save(task);
+    }
+
 }

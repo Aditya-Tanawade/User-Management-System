@@ -2,6 +2,7 @@ package com.example.User.Management.System.services;
 
 import com.example.User.Management.System.dtos.TaskDTO;
 import com.example.User.Management.System.dtos.UserDTO;
+import com.example.User.Management.System.dtos.UserWithTasksDTO;
 import com.example.User.Management.System.entities.Role;
 import com.example.User.Management.System.entities.User;
 import com.example.User.Management.System.exceptions.ResourceNotFoundException;
@@ -48,12 +49,13 @@ public class UserService  {
     }
 
 
-    public UserDTO updateUser(Long id, User user) {
+    public UserDTO updateUser(Long id, UserDTO userDTO) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        existingUser.setName(user.getName());
-        existingUser.setEmail(user.getEmail());
-        existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        existingUser.setName(userDTO.getName());
+        existingUser.setEmail(userDTO.getEmail());
+        existingUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        existingUser.setRole(Role.valueOf(userDTO.getRole()));
         return mapper.map(userRepository.save(existingUser),UserDTO.class);
     }
 
@@ -92,4 +94,42 @@ public class UserService  {
 
         return mapper.map(user,UserDTO.class);
     }
+
+    public List<UserWithTasksDTO> getUsersWithTasks() {
+
+            List<User> users = userRepository.findAll();
+
+            return users.stream().map(user -> {
+                UserWithTasksDTO userWithTasksDTO = mapper.map(user, UserWithTasksDTO.class);
+
+                userWithTasksDTO.setTasks(user.getTasks().stream()
+                        .map(task -> mapper.map(task, TaskDTO.class))
+                        .collect(Collectors.toList()));
+
+                return userWithTasksDTO;
+            }).collect(Collectors.toList());
+
+    }
+
+
+    public UserWithTasksDTO getUserWithTasksById(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);  // Find user by ID
+
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+
+        User user = userOptional.get();
+
+        UserWithTasksDTO userWithTasksDTO = mapper.map(user, UserWithTasksDTO.class);
+
+        userWithTasksDTO.setTasks(user.getTasks().stream()
+                .map(task -> mapper.map(task, TaskDTO.class))
+                .collect(Collectors.toList()));
+
+        return userWithTasksDTO;
+    }
+
+
+
 }
