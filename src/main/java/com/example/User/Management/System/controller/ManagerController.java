@@ -7,6 +7,7 @@ import com.example.User.Management.System.entities.Task;
 import com.example.User.Management.System.entities.User;
 import com.example.User.Management.System.services.TaskService;
 import com.example.User.Management.System.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +33,7 @@ public class ManagerController {
     }
 
     @PostMapping("/users/{userId}/assign-task")
-    public TaskDTO assignTaskToUser(@PathVariable Long userId, @RequestBody String taskName) {
-        return taskService.assignTaskToUser(userId, taskName);
+    public TaskDTO assignTaskToUser(@PathVariable Long userId, @RequestBody @Valid TaskDTO taskDTO) {
+        return taskService.assignTaskToUser(userId, taskDTO);
     }
 }

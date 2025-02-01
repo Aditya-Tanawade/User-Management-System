@@ -23,15 +23,12 @@ public class TaskService {
     @Autowired
     private ModelMapper mapper; // For DTO conversion
 
-    public TaskDTO assignTaskToUser(Long userId, String taskName) {
+    public TaskDTO assignTaskToUser(Long userId, TaskDTO taskDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
 
-        Task task = new Task();
-        task.setTaskName(taskName);
-        task.setUser(user);
+        Task task =mapper.map(taskDTO,Task.class);
 
-        Task savedTask = taskRepository.save(task);
-        return mapper.map(savedTask, TaskDTO.class); // Convert to DTO before returning
+        return mapper.map(taskRepository.save(task),TaskDTO.class);
     }
 }

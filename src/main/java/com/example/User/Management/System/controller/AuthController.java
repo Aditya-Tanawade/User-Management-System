@@ -6,6 +6,7 @@ import com.example.User.Management.System.dtos.UserDTO;
 import com.example.User.Management.System.entities.User;
 import com.example.User.Management.System.services.JwtService;
 import com.example.User.Management.System.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,7 +46,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public UserDTO createUser(@RequestBody UserDTO userDTO) {
+    public UserDTO createUser(@RequestBody @Valid UserDTO userDTO) {
         return userService.createUser(userDTO);
     }
 }
